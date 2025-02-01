@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Upload</title>
+    <style>
+      .video-cont{
+
+        display: none;
+      }
+      .video-show.video-cont{
+        display: block;
+      }
+        :root{
+            box-sizing: border-box;
+        }
+      h1 {
+        font-size: 4rem;
+      }
+      body {
+        margin: 0px;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(27, 21, 21);
+        color: white;
+        gap: 100px;
+      }
+      form {
+        display: flex;
+        /* border: 5px solid beige; */
+        height: 100px;
+        justify-content: space-between;
+        background-color: rgb(34, 34, 34);
+        align-items: center;
+        border-radius: 20px;
+        width: 50%;
+        align-items: center;
+      }
+      input[type="file"] {
+        display: none;
+      }
+      label[for="file-upload"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 200px;
+        
+      }
+      button:hover,
+      label[for="file-upload"]:hover {
+        box-shadow: 0px 0px 10px black;
+      }
+      button{
+        width: min-content;
+      }
+      label[for="file-upload"],
+      button {
+        background-color: white;
+        border: 1px solid black;
+        height: 100%;
+        border-radius: 20px;
+        color: black;
+        padding: 0px 20px;
+      }
+      .file-names{
+        color: rgb(179, 179, 179);
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0px 20px;
+      }
+      .buffer{
+        color: white;
+        display: none;
+      }
+      .buffer-show{
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Research Paper to Video</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <label for="file-upload">Add Research Paper</label>
+      <div class="file-names">Entered file will be shown here</div>
+      <input id="file-upload" type="file" name="file" required />
+      <button type="submit">Upload</button>
+    </form>
+    <div class="buffer">buffering</div>
+    <div class="video-cont">
+      <video class="video" width="640" height="360" controls>
+        <source src="/stream_video" type="video/mp4">
+        Your browser does not support the video tag.
+        </video>
+    </div>
+  </body>
+  <script>
+    let fileButton = document.querySelector("#file-upload");
+    let fileNames = document.querySelector(".file-names");
+    let uploadBut = document.querySelector("button");
+    let videoCont = document.querySelector(".video-cont");
+    const form = document.querySelector("form")
+    let buffer = document.querySelector(".buffer")
+    fileButton.addEventListener("change",(e)=>{
+        if(e.target.files.length > 0){
+            console.log(e.target.files[0])
+            fileNames.textContent = e.target.files[0].name;
+        }
+    })
+    uploadBut.addEventListener("click", async (e)=>{
+        e.preventDefault();
+        if(fileButton.files.length>0){
+          const formData = new FormData();
+          buffer.classList.add("buffer-show")
+            console.log("print")
+            formData.append("file", fileButton.files[0]);
+            try{let request = await fetch("/upload", {
+                method:"post",
+                body: formData,
+            })
+            buffer.classList.remove("buffer-show")
+            console.log(formData);
+            console.log(request);
+            videoCont.classList.add("video-show")
+        }
+            catch(e){
+                throw e;
+            }
+        }
+    })
+  </script>
+</html>
